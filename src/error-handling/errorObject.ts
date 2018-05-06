@@ -1,0 +1,1 @@
+export const errorObject: any = { e: {} };
