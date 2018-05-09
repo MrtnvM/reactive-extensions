@@ -19,6 +19,22 @@ describe('0. Testing Observable', () => {
         observable.subscribe(onNext,  onError, onComplete);
     }, 100);
 
+    it ('multiple onNext', (done) => {
+        const data = [1, 2, 3];
+
+        const observable = Observable.create((observer: Observer<number>) => {
+            data.forEach(i => observer.next(i));
+        });
+
+        let countOfAssertions = 0;
+
+        observable.subscribe(i => {
+            expect(i).toEqual(data[countOfAssertions++]);
+
+            (countOfAssertions === data.length) && done();
+        });
+    }, 100);
+
     it('onError', (done) => {
         const observable = Observable.create((observer: Observer<number>) => {
             observer.error(new Error('WTF!'));
