@@ -1,5 +1,6 @@
 import { Observable } from '../Observable';
 import { Observer } from '../Observer';
+import { failOnComplete, failOnError, failOnNext } from '../utils/testUtils';
 
 describe('0. Testing Observable', () => {
 
@@ -13,10 +14,7 @@ describe('0. Testing Observable', () => {
             done();
         };
 
-        const onError = () => fail('Should not be called');
-        const onComplete = () => fail('Should not be called');
-
-        observable.subscribe(onNext,  onError, onComplete);
+        observable.subscribe(onNext,  failOnError, failOnComplete);
     }, 100);
 
     it ('multiple onNext', (done) => {
@@ -45,10 +43,7 @@ describe('0. Testing Observable', () => {
             done();
         };
 
-        const onNext = () => fail('Should not be called');
-        const onComplete = () => fail('Should not be called');
-
-        observable.subscribe(onNext,  onError, onComplete);
+        observable.subscribe(failOnNext,  onError, failOnComplete);
     }, 100);
 
     it('onComplete', (done) => {
@@ -60,9 +55,21 @@ describe('0. Testing Observable', () => {
             expect(true).toBeTruthy();
             done();
         };
-        const onNext = () => fail('Should not be called');
-        const onError = () => fail('Should not be called');
 
-        observable.subscribe(onNext,  onError, onComplete);
+        observable.subscribe(failOnNext,  failOnError, onComplete);
     }, 100);
+
+    it('onNext & onComplete', () => {
+        expect.assertions(2);
+
+        const observable = Observable.create((observer: Observer<number>) => {
+            observer.next(5);
+            observer.complete();
+        });
+
+        const onNext = (value) => expect(value).toEqual(5);
+        const onComplete = () => expect(true).toBeTruthy();
+
+        observable.subscribe(onNext,  failOnError, onComplete);
+    });
 });

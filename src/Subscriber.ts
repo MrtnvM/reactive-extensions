@@ -1,12 +1,12 @@
 import { Observer, emptyObserver } from './Observer';
 import { Subscription } from './Subscription';
 import { PartialObserver } from './types';
-import { isFunction } from './utils';
+import { isFunction } from './utils/utils';
 
 export class Subscriber<T> extends Subscription implements Observer<T> {
 
     protected isStopped: boolean = false;
-    protected destination: PartialObserver<T> | Observer<T>;
+    protected destination: PartialObserver<any>;
 
     /**
      * A static factory for a Subscriber
@@ -25,7 +25,7 @@ export class Subscriber<T> extends Subscription implements Observer<T> {
         return new Subscriber(next, error, complete);
     }
 
-    constructor(destinationOrNext?: PartialObserver<T> | ((value: T) => void),
+    constructor(destinationOrNext?: PartialObserver<any> | ((value: T) => void),
                 error?: (e?: any) => void,
                 complete?: () => void) {
         super();
@@ -90,7 +90,7 @@ export class Subscriber<T> extends Subscription implements Observer<T> {
     }
 
     protected _next(value: T): void {
-        this.destination.next(value);
+        this.destination.next(<any>value);
     }
 
     protected _error(err: any): void {
